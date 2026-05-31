@@ -722,6 +722,7 @@
         {
           type: 'bar',
           orientation: 'h',
+          width: 0.72,
           x: data.map(item => Number(item[campo] || 0)),
           y: data.map(item => item.agente),
           marker: {
@@ -732,7 +733,15 @@
             }
           },
           text: data.map(item => fmt(item[campo])),
-          textposition: 'auto',
+          textposition: 'inside',
+          textangle: -90,
+          insidetextanchor: 'middle',
+          textfont: {
+            color: '#ffffff',
+            size: 11,
+            family: 'Inter, Segoe UI, Arial'
+          },
+          cliponaxis: false,
           hovertemplate: '<b>%{y}</b><br>Valor: %{x}<extra></extra>'
         }
       ], {
