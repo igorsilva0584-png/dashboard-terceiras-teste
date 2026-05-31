@@ -325,10 +325,11 @@
 
     .custom-bar-value {
       position: absolute;
-      right: -8px;
+      right: -10px;
       top: 50%;
-      transform: translateY(-50%) rotate(-90deg);
-      transform-origin: center;
+      transform: translateY(-50%);
+      writing-mode: vertical-rl;
+      text-orientation: mixed;
       color: #ffffff;
       font-size: 11px;
       font-weight: 800;
@@ -551,11 +552,9 @@
 
   <script>
     let dados = [];
-
     const DATA_URL = 'dados_terceiras.json';
 
     const fmt = n => Number(n || 0).toLocaleString('pt-BR');
-
     const pct = n => `${Number(n || 0).toFixed(1).replace('.', ',')}%`;
 
     const plotConfig = {
@@ -769,8 +768,7 @@
       const data = [...lista]
         .filter(item => Number(item[campo] || 0) > 0)
         .sort((a, b) => Number(b[campo] || 0) - Number(a[campo] || 0))
-        .slice(0, 12)
-        .reverse();
+        .slice(0, 12);
 
       if (data.length === 0) {
         container.innerHTML = `<div class="custom-empty">${mensagemVazia}</div>`;
@@ -792,8 +790,8 @@
                 </div>
 
                 <div class="custom-bar-track">
-                  <div 
-                    class="custom-bar-fill" 
+                  <div
+                    class="custom-bar-fill"
                     style="width: ${largura}%; background: ${cor};"
                     title="${escapeHtml(item.agente)}: ${fmt(valor)}"
                   >
