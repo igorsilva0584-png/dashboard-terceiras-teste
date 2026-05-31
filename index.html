@@ -329,16 +329,23 @@
       right: 5px;
       top: 50%;
       transform: translateY(-50%);
-      writing-mode: vertical-rl;
-      text-orientation: upright;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
       color: #ffffff;
       font-size: 9px;
       font-weight: 900;
-      line-height: 0.45;
-      letter-spacing: -7px;
-      white-space: nowrap;
+      line-height: 1;
       text-shadow: 0 1px 3px rgba(0,0,0,0.75);
       pointer-events: none;
+    }
+
+    .custom-bar-value span {
+      display: block;
+      height: 7px;
+      line-height: 7px;
     }
 
     .custom-empty {
@@ -554,11 +561,9 @@
 
   <script>
     let dados = [];
-
     const DATA_URL = 'dados_terceiras.json';
 
     const fmt = n => Number(n || 0).toLocaleString('pt-BR');
-
     const pct = n => `${Number(n || 0).toFixed(1).replace('.', ',')}%`;
 
     const plotConfig = {
@@ -602,6 +607,13 @@
         .replaceAll('>', '&gt;')
         .replaceAll('"', '&quot;')
         .replaceAll("'", '&#039;');
+    }
+
+    function valorVertical(valor) {
+      return String(fmt(valor))
+        .split('')
+        .map(caractere => `<span>${escapeHtml(caractere)}</span>`)
+        .join('');
     }
 
     function statusItem(item) {
@@ -799,7 +811,7 @@
                     style="width: ${largura}%; background: ${cor};"
                     title="${escapeHtml(item.agente)}: ${fmt(valor)}"
                   >
-                    <span class="custom-bar-value">${fmt(valor)}</span>
+                    <span class="custom-bar-value">${valorVertical(valor)}</span>
                   </div>
                 </div>
               </div>
