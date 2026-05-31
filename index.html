@@ -280,6 +280,73 @@
       color: #fecaca;
     }
 
+    .custom-bar-chart {
+      height: 100%;
+      padding: 18px 24px 18px 14px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 9px;
+    }
+
+    .custom-bar-row {
+      display: grid;
+      grid-template-columns: 132px 1fr;
+      align-items: center;
+      gap: 10px;
+      min-height: 20px;
+    }
+
+    .custom-bar-name {
+      color: #dbeafe;
+      font-size: 11px;
+      font-weight: 700;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      text-align: right;
+    }
+
+    .custom-bar-track {
+      position: relative;
+      height: 18px;
+      border-radius: 999px;
+      background: rgba(148, 163, 184, 0.10);
+      overflow: visible;
+    }
+
+    .custom-bar-fill {
+      position: relative;
+      height: 100%;
+      min-width: 8px;
+      border-radius: 999px;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.10);
+    }
+
+    .custom-bar-value {
+      position: absolute;
+      right: -8px;
+      top: 50%;
+      transform: translateY(-50%) rotate(-90deg);
+      transform-origin: center;
+      color: #ffffff;
+      font-size: 11px;
+      font-weight: 800;
+      line-height: 1;
+      white-space: nowrap;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.55);
+      pointer-events: none;
+    }
+
+    .custom-empty {
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #8ea2bb;
+      font-size: 14px;
+    }
+
     @media (max-width: 1250px) {
       .topbar {
         flex-direction: column;
@@ -317,6 +384,14 @@
 
       .brand {
         padding: 18px;
+      }
+
+      .custom-bar-row {
+        grid-template-columns: 110px 1fr;
+      }
+
+      .custom-bar-name {
+        font-size: 10px;
       }
     }
   </style>
@@ -517,6 +592,15 @@
       }
     };
 
+    function escapeHtml(valor) {
+      return String(valor ?? '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+    }
+
     function statusItem(item) {
       if (Number(item.ritmo) >= 100) return 'OK';
       if (Number(item.ritmo) >= 75) return 'Atenção';
@@ -680,6 +764,8 @@
     }
 
     function renderBarHorizontal(id, lista, campo, cor, mensagemVazia = 'Sem dados para exibir') {
+      const container = document.getElementById(id);
+
       const data = [...lista]
         .filter(item => Number(item[campo] || 0) > 0)
         .sort((a, b) => Number(b[campo] || 0) - Number(a[campo] || 0))
@@ -687,91 +773,38 @@
         .reverse();
 
       if (data.length === 0) {
-        Plotly.react(id, [], {
-          ...plotLayoutBase,
-          annotations: [
-            {
-              text: mensagemVazia,
-              x: 0.5,
-              y: 0.5,
-              xref: 'paper',
-              yref: 'paper',
-              showarrow: false,
-              font: {
-                color: '#8ea2bb',
-                size: 14
-              }
-            }
-          ],
-          xaxis: {
-            visible: false
-          },
-          yaxis: {
-            visible: false
-          },
-          showlegend: false
-        }, plotConfig);
-
+        container.innerHTML = `<div class="custom-empty">${mensagemVazia}</div>`;
         return;
       }
 
       const maxValor = Math.max(...data.map(item => Number(item[campo] || 0)));
 
-      Plotly.react(id, [
-        {
-          type: 'bar',
-          orientation: 'h',
-          x: data.map(item => Number(item[campo] || 0)),
-          y: data.map(item => item.agente),
-          marker: {
-            color: cor,
-            line: {
-              color: 'rgba(255,255,255,.12)',
-              width: 1
-            }
-          },
-          text: data.map(item => fmt(item[campo])),
-          textposition: 'outside',
-          textangle: -90,
-          textfont: {
-            color: '#ffffff',
-            size: 11,
-            family: 'Inter, Segoe UI, Arial'
-          },
-          cliponaxis: false,
-          hovertemplate: '<b>%{y}</b><br>Valor: %{x}<extra></extra>'
-        }
-      ], {
-        ...plotLayoutBase,
-        margin: {
-          l: 145,
-          r: 54,
-          t: 18,
-          b: 42
-        },
-        xaxis: {
-          ...plotLayoutBase.xaxis,
-          range: [0, maxValor * 1.28],
-          rangemode: 'tozero',
-          tickfont: {
-            color: '#dbeafe'
-          }
-        },
-        yaxis: {
-          ...plotLayoutBase.yaxis,
-          type: 'category',
-          automargin: true,
-          tickfont: {
-            color: '#dbeafe',
-            size: 11
-          }
-        },
-        showlegend: false,
-        uniformtext: {
-          mode: 'show',
-          minsize: 10
-        }
-      }, plotConfig);
+      container.innerHTML = `
+        <div class="custom-bar-chart">
+          ${data.map(item => {
+            const valor = Number(item[campo] || 0);
+            const largura = maxValor > 0 ? Math.max((valor / maxValor) * 100, 3) : 0;
+
+            return `
+              <div class="custom-bar-row">
+                <div class="custom-bar-name" title="${escapeHtml(item.agente)}">
+                  ${escapeHtml(item.agente)}
+                </div>
+
+                <div class="custom-bar-track">
+                  <div 
+                    class="custom-bar-fill" 
+                    style="width: ${largura}%; background: ${cor};"
+                    title="${escapeHtml(item.agente)}: ${fmt(valor)}"
+                  >
+                    <span class="custom-bar-value">${fmt(valor)}</span>
+                  </div>
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `;
     }
 
     function renderTabela(lista) {
