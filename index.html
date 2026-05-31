@@ -282,11 +282,11 @@
 
     .custom-bar-chart {
       height: 100%;
-      padding: 18px 24px 18px 14px;
+      padding: 14px 24px 14px 14px;
       display: flex;
       flex-direction: column;
       justify-content: center;
-      gap: 9px;
+      gap: 5px;
     }
 
     .custom-bar-row {
@@ -294,7 +294,7 @@
       grid-template-columns: 132px 1fr;
       align-items: center;
       gap: 10px;
-      min-height: 20px;
+      min-height: 24px;
     }
 
     .custom-bar-name {
@@ -309,7 +309,7 @@
 
     .custom-bar-track {
       position: relative;
-      height: 18px;
+      height: 24px;
       border-radius: 999px;
       background: rgba(148, 163, 184, 0.10);
       overflow: visible;
@@ -326,16 +326,18 @@
 
     .custom-bar-value {
       position: absolute;
-      right: 4px;
+      right: 6px;
       top: 50%;
-      transform: translateY(-50%) rotate(-90deg);
-      transform-origin: center;
+      transform: translateY(-50%);
+      writing-mode: vertical-rl;
+      text-orientation: upright;
       color: #ffffff;
-      font-size: 11px;
+      font-size: 10px;
       font-weight: 800;
-      line-height: 1;
+      line-height: 0.85;
+      letter-spacing: -3px;
       white-space: nowrap;
-      text-shadow: 0 1px 3px rgba(0,0,0,0.65);
+      text-shadow: 0 1px 3px rgba(0,0,0,0.70);
       pointer-events: none;
     }
 
@@ -552,9 +554,11 @@
 
   <script>
     let dados = [];
+
     const DATA_URL = 'dados_terceiras.json';
 
     const fmt = n => Number(n || 0).toLocaleString('pt-BR');
+
     const pct = n => `${Number(n || 0).toFixed(1).replace('.', ',')}%`;
 
     const plotConfig = {
@@ -627,6 +631,7 @@
         }
 
         dados = await resposta.json();
+
         initFiltros();
         atualizar();
       } catch (erro) {
@@ -835,6 +840,7 @@
       const lista = dadosFiltrados();
 
       atualizarKPIs(lista);
+
       renderRitmo(lista);
       renderResponsavel(lista);
 
