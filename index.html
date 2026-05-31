@@ -680,127 +680,47 @@
     }
 
     function renderBarHorizontal(id, lista, campo, cor, mensagemVazia = 'Sem dados para exibir') {
-  const data = [...lista]
-    .filter(item => Number(item[campo] || 0) > 0)
-    .sort((a, b) => Number(b[campo] || 0) - Number(a[campo] || 0))
-    .slice(0, 12)
-    .reverse();
+      const data = [...lista]
+        .filter(item => Number(item[campo] || 0) > 0)
+        .sort((a, b) => Number(b[campo] || 0) - Number(a[campo] || 0))
+        .slice(0, 12)
+        .reverse();
 
-  if (data.length === 0) {
-    Plotly.react(id, [], {
-      ...plotLayoutBase,
-      annotations: [
-        {
-          text: mensagemVazia,
-          x: 0.5,
-          y: 0.5,
-          xref: 'paper',
-          yref: 'paper',
-          showarrow: false,
-          font: {
-            color: '#8ea2bb',
-            size: 14
-          }
-        }
-      ],
-      xaxis: {
-        visible: false
-      },
-      yaxis: {
-        visible: false
-      },
-      showlegend: false
-    }, plotConfig);
-
-    return;
-  }
-
-  const maxValor = Math.max(...data.map(item => Number(item[campo] || 0)));
-
-  Plotly.react(id, [
-    {
-      type: 'bar',
-      orientation: 'h',
-      x: data.map(item => Number(item[campo] || 0)),
-      y: data.map(item => item.agente),
-      marker: {
-        color: cor,
-        line: {
-          color: 'rgba(255,255,255,.12)',
-          width: 1
-        }
-      },
-      text: data.map(item => fmt(item[campo])),
-      textposition: 'outside',
-      textangle: -90,
-      textfont: {
-        color: '#ffffff',
-        size: 11,
-        family: 'Inter, Segoe UI, Arial'
-      },
-      cliponaxis: false,
-      hovertemplate: '<b>%{y}</b><br>Valor: %{x}<extra></extra>'
-    }
-  ], {
-    ...plotLayoutBase,
-    margin: {
-      l: 145,
-      r: 42,
-      t: 18,
-      b: 42
-    },
-    xaxis: {
-      ...plotLayoutBase.xaxis,
-      range: [0, maxValor * 1.25],
-      rangemode: 'tozero',
-      tickfont: {
-        color: '#dbeafe'
-      }
-    },
-    yaxis: {
-      ...plotLayoutBase.yaxis,
-      type: 'category',
-      automargin: true,
-      tickfont: {
-        color: '#dbeafe',
-        size: 11
-      }
-    },
-    showlegend: false,
-    uniformtext: {
-      mode: 'show',
-      minsize: 10
-    }
-  }, plotConfig);
-}
-
+      if (data.length === 0) {
+        Plotly.react(id, [], {
+          ...plotLayoutBase,
+          annotations: [
+            {
+              text: mensagemVazia,
+              x: 0.5,
+              y: 0.5,
+              xref: 'paper',
+              yref: 'paper',
+              showarrow: false,
+              font: {
+                color: '#8ea2bb',
+                size: 14
+              }
+            }
+          ],
+          xaxis: {
+            visible: false
+          },
+          yaxis: {
+            visible: false
+          },
+          showlegend: false
+        }, plotConfig);
 
         return;
       }
 
       const maxValor = Math.max(...data.map(item => Number(item[campo] || 0)));
 
-      const anotacoesValores = data.map(item => ({
-        x: Number(item[campo] || 0),
-        y: item.agente,
-        text: fmt(item[campo]),
-        showarrow: false,
-        textangle: -90,
-        xanchor: 'right',
-        yanchor: 'middle',
-        xshift: -7,
-        font: {
-          color: '#ffffff',
-          size: 11,
-          family: 'Inter, Segoe UI, Arial'
-        }
-      }));
-
       Plotly.react(id, [
         {
           type: 'bar',
           orientation: 'h',
-          width: 0.72,
           x: data.map(item => Number(item[campo] || 0)),
           y: data.map(item => item.agente),
           marker: {
@@ -810,20 +730,28 @@
               width: 1
             }
           },
+          text: data.map(item => fmt(item[campo])),
+          textposition: 'outside',
+          textangle: -90,
+          textfont: {
+            color: '#ffffff',
+            size: 11,
+            family: 'Inter, Segoe UI, Arial'
+          },
+          cliponaxis: false,
           hovertemplate: '<b>%{y}</b><br>Valor: %{x}<extra></extra>'
         }
       ], {
         ...plotLayoutBase,
         margin: {
           l: 145,
-          r: 24,
+          r: 54,
           t: 18,
           b: 42
         },
-        annotations: anotacoesValores,
         xaxis: {
           ...plotLayoutBase.xaxis,
-          range: [0, maxValor * 1.18],
+          range: [0, maxValor * 1.28],
           rangemode: 'tozero',
           tickfont: {
             color: '#dbeafe'
@@ -838,7 +766,11 @@
             size: 11
           }
         },
-        showlegend: false
+        showlegend: false,
+        uniformtext: {
+          mode: 'show',
+          minsize: 10
+        }
       }, plotConfig);
     }
 
