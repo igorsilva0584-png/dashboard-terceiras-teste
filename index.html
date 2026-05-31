@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
   <title>Dashboard - Terceiras</title>
 
   <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
@@ -718,6 +717,22 @@
 
       const maxValor = Math.max(...data.map(item => Number(item[campo] || 0)));
 
+      const anotacoesValores = data.map(item => ({
+        x: Number(item[campo] || 0),
+        y: item.agente,
+        text: fmt(item[campo]),
+        showarrow: false,
+        textangle: -90,
+        xanchor: 'right',
+        yanchor: 'middle',
+        xshift: -7,
+        font: {
+          color: '#ffffff',
+          size: 11,
+          family: 'Inter, Segoe UI, Arial'
+        }
+      }));
+
       Plotly.react(id, [
         {
           type: 'bar',
@@ -732,16 +747,6 @@
               width: 1
             }
           },
-          text: data.map(item => fmt(item[campo])),
-          textposition: 'inside',
-          textangle: -90,
-          insidetextanchor: 'middle',
-          textfont: {
-            color: '#ffffff',
-            size: 11,
-            family: 'Inter, Segoe UI, Arial'
-          },
-          cliponaxis: false,
           hovertemplate: '<b>%{y}</b><br>Valor: %{x}<extra></extra>'
         }
       ], {
@@ -752,6 +757,7 @@
           t: 18,
           b: 42
         },
+        annotations: anotacoesValores,
         xaxis: {
           ...plotLayoutBase.xaxis,
           range: [0, maxValor * 1.18],
